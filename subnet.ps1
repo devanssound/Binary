@@ -1,6 +1,4 @@
-<#Learn Subnetting!
-subnet.ps1
-#>
+<#Learn Subnetting! | subnet.ps1 #>
 
 # Input: CIDR value like 24 or 26;
 # Output: SubnetMask in Binary 11111111 11111111 11111111 11000000
@@ -54,8 +52,6 @@ function Main {
         $parts = $userInput -split '/'
         $ipAddress = $parts[0]
         $cidr = [int]$parts[1]
-
-        # Validate CIDR range
         if ($cidr -ge 0 -and $cidr -le 32) {
             $binaryMask = Convert-CIDRToBinaryMask -CIDR $cidr
             $decimalMask = Convert-BinaryMaskToDecimal -BinaryMask $binaryMask
@@ -71,6 +67,4 @@ function Main {
         }
     }
 }
-
-<# MAIN function call #>
 Main
