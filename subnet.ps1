@@ -88,6 +88,27 @@ function Get-FirstAndLastHost {
     return @{FirstHost=$firstHost; LastHost=$lastHost}
 }
 
+# Calculate Maximum Number of Subnets and Usable Hosts per Subnet
+function Get-SubnetsAndHosts {
+    param (
+        [string]$ipAddress,
+        [int]$subnetMaskBits,
+        [int]$newSubnetBits
+    )
+    $totalBits = 32
+    $networkBits = $subnetMaskBits
+    $subnetBits = $newSubnetBits - $subnetMaskBits
+    $hostBits = $totalBits - $newSubnetBits
+
+    $maxSubnets = [math]::Pow(2, $subnetBits)
+    $usableHostsPerSubnet = [math]::Pow(2, $hostBits) - 2
+
+    return @{
+        MaxSubnets=$maxSubnets
+        UsableHostsPerSubnet=$usableHostsPerSubnet
+    }
+}
+
 # Interactive Subnetting Program
 function SubnettingMenu {
     while ($true) {
@@ -95,8 +116,9 @@ function SubnettingMenu {
         Write-Host "1. Find the subnet the host belongs to"
         Write-Host "2. Find the last valid host on the network"
         Write-Host "3. Find the first valid host on the network the host is part of"
-        Write-Host "4. Exit"
-        $choice = Read-Host "Enter your choice (1-4)"
+        Write-Host "4. Calculate maximum subnets and usable hosts per subnet"
+        Write-Host "5. Exit"
+        $choice = Read-Host "Enter your choice (1-5)"
 
         switch ($choice) {
             1 {
@@ -124,6 +146,16 @@ function SubnettingMenu {
                 Write-Host "The first valid host on the network $ipAddress/$cidr is: $($hosts.FirstHost)"
             }
             4 {
+                $UserInput = Get-IPCIDR "Enter the network IP address and subnet mask bits (ex: 172.26.0.0/23): "
+                $parts = $UserInput -split '/'
+                $ipAddress = $parts[0]
+                $subnetMaskBits = [int]$parts[1]
+                $newSubnetBits = Read-Host "Enter the new subnet mask bits (ex: 24 for /24): "
+                $result = Get-SubnetsAndHosts -ipAddress $ipAddress -subnetMaskBits $subnetMaskBits -newSubnetBits $newSubnetBits
+                Write-Host "Maximum number of valid subnets: $($result.MaxSubnets)"
+                Write-Host "Usable hosts per subnet: $($result.UsableHostsPerSubnet)"
+            }
+            5 {
                 Write-Host "Exiting..."
                 break
             }
