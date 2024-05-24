@@ -43,19 +43,17 @@ function Get-IPCIDR {
             Write-Host "Invalid input. Please try again."
         }
     }
-}
+} 
 
-function Main {
-    while ($true) {
-        $userInput = Get-IPCIDR
-        Write-Host "Debug: Processing user input: $userInput"  # Debug output
+while ($true) {
+     $userInput = Get-IPCIDR
+     Write-Host "Debug: Processing user input: $userInput"  # Debug output
         $parts = $userInput -split '/'
         $ipAddress = $parts[0]
         $cidr = [int]$parts[1]
         if ($cidr -ge 0 -and $cidr -le 32) {
             $binaryMask = Convert-CIDRToBinaryMask -CIDR $cidr
             $decimalMask = Convert-BinaryMaskToDecimal -BinaryMask $binaryMask
-
             Write-Host "IP Address: $ipAddress"
             Write-Host "CIDR Notation: /$cidr"
             Write-Host "Subnet Mask (Decimal): $decimalMask"
@@ -67,4 +65,3 @@ function Main {
         }
     }
 }
-Main
